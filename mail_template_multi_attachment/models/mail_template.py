@@ -46,10 +46,9 @@ class MailTemplate(models.Model):
                 )
                 report_name = False
                 if print_report_name:
-                    report_name = safe_eval(
-                        print_report_name,
-                        {"object": self.env[self.model].browse(res_id), "time": time},
-                    )
+                    template = template_report.mail_template_id
+                    res_id = self._context.get('active_id')
+                    report_name = template._render_template(print_report_name, template.render_model, [res_id])[res_id]
                 report_service = report.report_name
 
                 if report.report_type in ["qweb-html", "qweb-pdf"]:
