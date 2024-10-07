@@ -39,15 +39,15 @@ class MailTemplate(models.Model):
         # into 'attachments' key
         for res_id, values in results.items():
             attachments = values.setdefault("attachments", [])
-            for template_report in self.template_report_ids:
+            lang = self._render_template_inline_template(self.lang, self.render_model, [res_id])[res_id]
+            for template_report in self.template_report_ids.with_context(lang=lang):
                 report = template_report.report_template_id
                 print_report_name = (
                     template_report.report_name or report.print_report_name
                 )
                 report_name = False
                 if print_report_name:
-                    template = template_report.mail_template_id
-                    res_id = self._context.get('active_id')
+                    template = template_report.mail_template_id.with_context(lang=lang)
                     report_name = template._render_template(print_report_name, template.render_model, [res_id])[res_id]
                 report_service = report.report_name
 
